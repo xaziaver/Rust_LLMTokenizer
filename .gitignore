@@ -1,0 +1,4 @@
+tokenizer/*/target/
+tokenizer/**/**/*.rs.bk
+tokenizer/**/.env
+ttokenizer/**/.env.local

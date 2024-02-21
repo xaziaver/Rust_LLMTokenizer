@@ -12,8 +12,26 @@ pub mod tests;
 
 fn main() {
 
-    crate::tests::codepoint_test::execute();
-    
+    let to_be_tokenized: &str = "wave: \u{1F44B}, king: \u{2654}";
+
+    let test_cases = vec![
+        ("CODEPOINTS", Box::new(crate::tests::codepoints_test::execute) as Box<dyn Fn(&str) -> Vec<u32>>),
+        ("UTF8 BYTES", Box::new(crate::tests::utf8_bytes_test::execute)),
+        ("BYTE PAIR ENCODING", Box::new(crate::tests::bpe_test::execute)),
+    ];
+
+    for (test_name, test_fn) in test_cases {
+        println!("START {} TESTING", test_name);
+        println!("##############################");
+        println!("Input string: {}", to_be_tokenized);
+        
+        let result_vec = test_fn(to_be_tokenized);
+        println!("Output vector: {:?}", result_vec);
+        
+        println!("##############################");
+        println!("END {} TESTING", test_name);
+        println!("");
+    }
 }
 
 

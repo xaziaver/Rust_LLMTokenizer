@@ -12,7 +12,7 @@ pub mod tests;
 
 fn main() {
 
-    let to_be_tokenized: &str = "wave: \u{1F44B}, king: \u{2654}";
+    let to_be_tokenized: &str = "Ｕｎｉｃｏｄｅ! 🅤🅝🅘🅒🅞🅓🅔‽ 🇺‌🇳‌🇮‌🇨‌🇴‌🇩‌🇪! 😄 The very name strikes fear and awe into the hearts of programmers worldwide. We all know we ought to “support Unicode” in our software (whatever that means—like using wchar_t for all the strings, right?). But Unicode can be abstruse, and diving into the thousand-page Unicode Standard plus its dozens of supplementary annexes, reports, and notes can be more than a little intimidating. I don’t blame programmers for still finding the whole thing mysterious, even 30 years after Unicode’s inception.";
 
     let test_cases = vec![
         ("CODEPOINTS", Box::new(crate::tests::codepoints_test::execute) as Box<dyn Fn(&str) -> Vec<u32>>),
@@ -23,10 +23,10 @@ fn main() {
     for (test_name, test_fn) in test_cases {
         println!("START {} TESTING", test_name);
         println!("##############################");
-        println!("Input string: {}", to_be_tokenized);
+        //println!("Input string: {}", to_be_tokenized);
         
         let result_vec = test_fn(to_be_tokenized);
-        println!("Output vector: {:?}", result_vec);
+        println!("Output vector length: {:?}", result_vec.len());
         
         println!("##############################");
         println!("END {} TESTING", test_name);

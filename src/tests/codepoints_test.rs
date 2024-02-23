@@ -4,8 +4,6 @@ pub fn execute(test_string: &str) -> Vec<u32> {
     let indices = precompute_char_byte_indices(&test_string);
 
     let mut codepoint_vec: Vec<u32> = vec![];
-    println!("START CODE POINT TESTING");
-    println!("##############################");
     for i in 0..indices.len() {
         match get_unicode_codepoint(&test_string, i, &indices) {
             Ok(codepoint) => codepoint_vec.push(codepoint),

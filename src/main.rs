@@ -32,9 +32,15 @@ use std::collections::HashSet;
 pub mod training;
 
 
+// TODO: explore https://github.com/karpathy/minbpe to get ideas for improvements
+//       and to compare against other tokenizer output vocabularies
+
+// TODO: find some metric for improvements to training, encode, and decode functions
+
+
 fn main() -> Result<(), std::io::Error> {
     // fetch data and run training to get maps
-    let data_file_path = "data/unicode_blog.txt";
+    let data_file_path = "data/taylorswift_wiki.txt";
     let data = fs::read_to_string(data_file_path)?;
     let training_set: &str = &data;
     
@@ -68,6 +74,9 @@ fn main() -> Result<(), std::io::Error> {
     Ok(())
 }
 
+
+// TODO: improve iteration process? currently iterates through mapping & each time
+//       text vector is iterated through twice to (1) get pairs and (2) replace occurrences
 fn encode(encode_map: Vec<((u32, u32), u32)>, text_vector: Vec<u8>) -> Vec<u32> {
     let text_clone = text_vector.clone();
     // translate into Vec<u32> to hold the extended bytes
@@ -91,10 +100,11 @@ fn encode(encode_map: Vec<((u32, u32), u32)>, text_vector: Vec<u8>) -> Vec<u32> 
             }
         }
     }
-
+    println!("starting length: {},\nending length: {}", text_clone.len(), text.len());
     println!("encoding compression ratio: {}", text_clone.len() as f32 / text.len() as f32);
     text
 }
+
 
 // TODO: take care of case when LLM provides invalid byte sequences (replace with invalid char)
 fn decode(decode_map: HashMap<u32, (u32, u32)>, tokens_vector: Vec<u32>) -> String {

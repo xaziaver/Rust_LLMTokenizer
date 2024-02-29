@@ -37,12 +37,16 @@ pub mod training;
 
 // TODO: find some metric for improvements to training, encode, and decode functions
 
+// TODO: explore sentencepiece library used by LLama and Mistral
+//       for an alternative approach (https://github.com/google/sentencepiece)
+
 
 fn main() -> Result<(), std::io::Error> {
     // fetch data and run training to get maps
     let data_file_path = "data/taylorswift_wiki.txt";
     let data = fs::read_to_string(data_file_path)?;
     let training_set: &str = &data;
+
     
     println!("");
     println!("START TRAINING");
@@ -59,7 +63,7 @@ fn main() -> Result<(), std::io::Error> {
     println!("");
     println!("START ENCODING");
     println!("##############################");
-    let text_encoded = encode(tokenizer.vocab_vec, text_example.as_bytes().to_vec());
+    let text_encoded = encode(&tokenizer, text_example.as_bytes().to_vec());
     let text_decoded = decode(tokenizer.vocab_hash, text_encoded);
     println!("##############################");
     println!("END ENCODING");
@@ -70,28 +74,40 @@ fn main() -> Result<(), std::io::Error> {
     assert_eq!(text_example.as_bytes().to_vec(), text_decoded.as_bytes().to_vec());
     println!("if you can see this then they were byte-wise equal!");
     println!("");
- 
+    
     Ok(())
 }
 
 
 // TODO: improve iteration process? currently iterates through mapping & each time
 //       text vector is iterated through twice to (1) get pairs and (2) replace occurrences
-fn encode(encode_map: Vec<((u32, u32), u32)>, text_vector: Vec<u8>) -> Vec<u32> {
+fn encode(map: &crate::training::Vocabulary, text_vector: Vec<u8>) -> Vec<u32> {
     let text_clone = text_vector.clone();
     // translate into Vec<u32> to hold the extended bytes
     let mut text: Vec<u32> = text_vector.into_iter().map(|val| val as u32).collect();
     
-    for (pair, ext_byte) in &encode_map {
-        let pairs = crate::training::pair_counts(&text);
-        let pairs_set: HashSet<&(u32, u32)> = pairs.keys().collect();
+    for (pair, ext_byte) in &map.vocab_vec {
+        let pairs: HashMap<(u32, u32), u32> = crate::training::pair_counts(&text);
+        let pairs_set: HashSet<(u32, u32)> = 
+            pairs.iter()
+            .filter(|&(_, &count)| count >= 2)
+            .map(|(&key, _)| key)
+            .collect();
 
         if pairs_set.contains(&pair) {
             let (byte1, byte2) = pair;
             let mut i = 0;
             while i < text.len() - 1 {
                 if text[i] == *byte1 && text[i + 1] == *byte2 {
-                    println!("replacing `{:?}{:?}` with extended byte {}", char::from_u32(*byte1).unwrap_or('?'), char::from_u32(*byte2).unwrap_or('?'), ext_byte);
+                    
+                    let string_byte1 = map.stringify_word(&byte1);
+                    let string_byte2 = map.stringify_word(&byte2);
+                    let string_view = format!("{}{}", &string_byte1, &string_byte2);
+                    println!("replacing `{:?}{:?}` with {}", 
+                        string_byte1,
+                        string_byte2,
+                        string_view);
+                    
                     text[i] = *ext_byte;
                     text.remove(i + 1);
                 } else {

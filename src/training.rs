@@ -10,18 +10,26 @@ pub struct Vocabulary {
 impl Vocabulary {
     pub fn stringify_word(&self, byte: &u32) -> String { 
         if let Some(string) = self.vocab_view.get(byte) {
-            string.clone() // Assuming you want to return the string as is.
+            string.clone()
         } else {
-            // Convert the byte to a char and format it as a string, without debug formatting.
-            char::from_u32(*byte).map(|c| c.to_string()).unwrap_or_default()
+            // convert to a char and convert to string
+            let c = char::from_u32(*byte).unwrap_or_default();
+            // escape common escape sequences
+            match c {
+                '\n' => "\\n".to_string(),
+                '\r' => "\\r".to_string(),
+                '\t' => "\\t".to_string(),
+                _ => c.to_string(),
+            }
         }
     }
 }
 
+
 // instead of using the raw UTF-8 bytes we want to support a larger vocabulary size
 // that we can tune as a hyperparameter while sticking with the same encoding
 pub fn execute(test_string: &str) -> Vocabulary {
-    let target_vocab_size = 500;
+    let target_vocab_size = 512;
     let new_vocabulary = train_tokenizer(test_string, target_vocab_size);
     new_vocabulary
 }
@@ -29,20 +37,22 @@ pub fn execute(test_string: &str) -> Vocabulary {
 
 // TODO: look at available inference source code (https://github.com/openai/tiktoken) to try to reverse
 // engineer training methods... tiktoken/tiktoken_ext/openai_public.py shows some details
-// tiktokenizer.vercel.app
+// tiktokenizer.vercel.app to see results with different versions of tokenizers
 
 
-// the BPE algorithm: compresses `utf8_bytes` while increasing vocabulary to `target` 
-// https://en.wikipedia.org/wiki/Byte_pair_encoding
+/// uses the BPE algorithm to merge the most common pairs of bytes across chunks of the input text
+/// the number of merges depends on the desired 'target' words in the returned Vocabulary object
 fn train_tokenizer(text: &str, target: u32) -> Vocabulary {
-
+    let verbose = false;        // change to true to print merges during training
     let mut vocab = Vocabulary {
         vocab_hash: HashMap::<u32, (u32, u32)>::new(),
         vocab_vec: Vec::<((u32, u32), u32)>::new(),
         vocab_view: HashMap::<u32, String>::new(),
     };
-    // start with 256 as the first 'new' word after the initial byte range
+    // start with 256 as the first new 'word' after the initial byte range
     let mut new_word: u32 = 256;
+    let total_merges = target-new_word;
+
     // split, convert to bytes, then extend the bytes to hold new words
     let split_text: Vec<String> = split(text);
     let mut split_bytes_ext: Vec<Vec<u32>> = 
@@ -52,8 +62,9 @@ fn train_tokenizer(text: &str, target: u32) -> Vocabulary {
             .collect();
 
     let mut pairs: HashMap<(u32, u32), u32> = HashMap::new();
+    let mut merges = total_merges;
     // for each loop.. merge 1 byte sequence and get 1 new word
-    while new_word < target {
+    while merges > 0 {
         pairs.clear();
         // to determine what to merge.. find the most common pair of 
         // consecutive bytes when each text chunk is considered separately
@@ -69,14 +80,17 @@ fn train_tokenizer(text: &str, target: u32) -> Vocabulary {
                 .filter(|&(_, count)| *count >= 2)
                 .max_by_key(|&(_, count)| count)
                 .map(|(pair, &count)| (*pair, count)) {
-            println!("found ({}, {}) {} times", byte1, byte2, count);
 
             // update Vocabulary
             vocab.vocab_vec.push(((byte1, byte2), new_word));
             vocab.vocab_hash.insert(new_word, (byte1, byte2));
             
-            let string_view = format!("{}{}", vocab.stringify_word(&byte1), vocab.stringify_word(&byte1));
-            println!("minting ({}, {}) into a new token {}", byte1, byte2, string_view);
+            // print most common pair found across all chunks and the new word
+            let string_view = format!("{}{}", vocab.stringify_word(&byte1), vocab.stringify_word(&byte2));
+            if verbose == true {
+                println!("merge {}/{}: ({}, {}) -> {} (b'{}') had {} occurrences",
+                    total_merges-merges+1, total_merges, byte1, byte2,new_word, string_view, count);
+             }
             vocab.vocab_view.insert(new_word, string_view);
             
             // replace all occurrences of pair in each chunk with new_word
@@ -96,16 +110,17 @@ fn train_tokenizer(text: &str, target: u32) -> Vocabulary {
         } else {
            break;  // break if no more pairs are found
         }
+        merges -= 1;
     }
     println!("extended vocabulary by {} from 256 words to {}", new_word-256, new_word); 
     vocab
 }
 
 
+/// returns counts for consecutive element pairs' occurrences.
 pub fn pair_counts(input_vec: &Vec<u32>) -> HashMap<(u32, u32), u32> {
     
     let mut pair_counts = HashMap::new();
-    // iterate over each pair and count occurrences
     for window in input_vec.windows(2) {
         if let [a, b] = *window {
             let pair = ((a, b), 1);
@@ -115,17 +130,18 @@ pub fn pair_counts(input_vec: &Vec<u32>) -> HashMap<(u32, u32), u32> {
     pair_counts
 }
 
+
 /// splits text into chunks and returns those in a vector
 pub fn split(text: &str)  -> Vec<String> {
     // adaptation of pattern used for GPT-4 tokenizer
     let combined_pattern = format!(
         r"{}|{}|{}|{}|{}|{}",
-        r"(?i:'(?:[sdmt]|ll|ve|re))", // contractions
-        r"[^\r\n\p{L}\p{N}]\p{L}+",   // words
-        r"\p{N}{1,3}",                // numbers
-        r"[^\s\p{L}\p{N}]+[\r\n]*",   // special characters
-        r"\s*[\r\n]",                 // newlines
-        r"\s+"                        // spaces
+        r"(?i:'(?:[sdmt]|ll|ve|re))",               // contractions (new syntax, but should match?)
+        r"[^\r\n\p{L}\p{N}]\p{L}+|^\p{L}+",         // words (does not include ?+, tried to recreate)
+        r"\p{N}{1,3}",                              // numbers (same syntax)
+        r" ?[^\s\p{L}\p{N}]+[\r\n]*",              // special characters  (+ instead of ++, but should match?)
+        r"\s*[\r\n]",                              // newlines (same syntax)
+        r"\s+"                                     // spaces (new syntax, but should match?)
     );
 
     let regex = Regex::new(&combined_pattern).unwrap();

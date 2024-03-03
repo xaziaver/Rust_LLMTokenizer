@@ -1,1 +1,8 @@
 /target
+
+/minbpe/__pycache__/
+/minbpe/.DS_Store
+/minbpe/models/**/*
+/minbpe/*.pytest_cache
+/minbpe/*.model
+/minbpe/*.vocab

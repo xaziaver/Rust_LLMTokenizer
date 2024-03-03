@@ -47,16 +47,16 @@ fn main() -> Result<(), std::io::Error> {
     let data = fs::read_to_string(data_file_path)?;
     let training_set: &str = &data;
 
-    
+    // train tokenizer 
     println!("");
     println!("START TRAINING");
     println!("##############################");
     let tokenizer = crate::training::execute(training_set);
     println!("##############################");
     println!("END TRAINING");
-    println!("");
 
     
+    // encode example
     let example_file_path = "data/example.txt";
     let example = fs::read_to_string(example_file_path)?;
     let text_example: &str = &example;
@@ -64,12 +64,12 @@ fn main() -> Result<(), std::io::Error> {
     println!("START ENCODING");
     println!("##############################");
     let text_encoded = encode(&tokenizer, text_example.as_bytes().to_vec());
-    let text_decoded = decode(tokenizer.vocab_hash, text_encoded);
+    println!("output tokens: {:?}", text_encoded);
+    let text_decoded = decode(&tokenizer.vocab_hash, text_encoded);
     println!("##############################");
     println!("END ENCODING");
-    println!("");
 
-    println!("text after encoding and decoding: \n{}", text_decoded);
+    // checks
     println!("");
     assert_eq!(text_example.as_bytes().to_vec(), text_decoded.as_bytes().to_vec());
     println!("if you can see this then they were byte-wise equal!");
@@ -82,6 +82,7 @@ fn main() -> Result<(), std::io::Error> {
 // TODO: improve iteration process? currently iterates through mapping & each time
 //       text vector is iterated through twice to (1) get pairs and (2) replace occurrences
 fn encode(map: &crate::training::Vocabulary, text_vector: Vec<u8>) -> Vec<u32> {
+    let verbose = true;        // change to true to print merges during encoding
     let text_clone = text_vector.clone();
     // translate into Vec<u32> to hold the extended bytes
     let mut text: Vec<u32> = text_vector.into_iter().map(|val| val as u32).collect();
@@ -99,15 +100,17 @@ fn encode(map: &crate::training::Vocabulary, text_vector: Vec<u8>) -> Vec<u32> {
             let mut i = 0;
             while i < text.len() - 1 {
                 if text[i] == *byte1 && text[i + 1] == *byte2 {
-                    
-                    let string_byte1 = map.stringify_word(&byte1);
-                    let string_byte2 = map.stringify_word(&byte2);
-                    let string_view = format!("{}{}", &string_byte1, &string_byte2);
-                    println!("replacing `{:?}{:?}` with {}", 
-                        string_byte1,
-                        string_byte2,
-                        string_view);
-                    
+                    // print replacements
+                    if verbose == true {
+                        let string_byte1 = map.stringify_word(&byte1);
+                        let string_byte2 = map.stringify_word(&byte2);
+                        let string_view = format!("{}{}", &string_byte1, &string_byte2);
+                        println!("replacing `{:?}{:?}` with {}", 
+                            string_byte1,
+                            string_byte2,
+                            string_view);
+                    }
+                    // replace the pair with the new word
                     text[i] = *ext_byte;
                     text.remove(i + 1);
                 } else {
@@ -123,7 +126,7 @@ fn encode(map: &crate::training::Vocabulary, text_vector: Vec<u8>) -> Vec<u32> {
 
 
 // TODO: take care of case when LLM provides invalid byte sequences (replace with invalid char)
-fn decode(decode_map: HashMap<u32, (u32, u32)>, tokens_vector: Vec<u32>) -> String {
+fn decode(decode_map: &HashMap<u32, (u32, u32)>, tokens_vector: Vec<u32>) -> String {
     let mut tokens = tokens_vector;
     let mut i = 0;
     while i < tokens.len() {

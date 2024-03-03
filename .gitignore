@@ -1,8 +1,10 @@
+# rust files
 /target
 
-/minbpe/__pycache__/
-/minbpe/.DS_Store
-/minbpe/models/**/*
-/minbpe/*.pytest_cache
-/minbpe/*.model
-/minbpe/*.vocab
+# python files
+/python_tokenizer/minbpe/__pycache__/
+/python_tokenizer/.DS_Store
+/python_tokenizer/models/**/*
+/python_tokenizer/*.pytest_cache
+/python_tokenizer/*.model
+/python_tokenizer/*.vocab

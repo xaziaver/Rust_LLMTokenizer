@@ -26,14 +26,13 @@ works better for the LLM's finite context length
 
 */
 use std::fs;
+use std::fs::File;
+use std::io::Write;
+use std::time::Instant;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
 pub mod training;
-
-
-// TODO: explore https://github.com/karpathy/minbpe to get ideas for improvements
-//       and to compare against other tokenizer output vocabularies
 
 // TODO: find some metric for improvements to training, encode, and decode functions
 
@@ -43,7 +42,7 @@ pub mod training;
 
 fn main() -> Result<(), std::io::Error> {
     // fetch data and run training to get maps
-    let data_file_path = "data/taylorswift_wiki.txt";
+    let data_file_path = "data/training_text.txt";
     let data = fs::read_to_string(data_file_path)?;
     let training_set: &str = &data;
 
@@ -51,24 +50,32 @@ fn main() -> Result<(), std::io::Error> {
     println!("");
     println!("START TRAINING");
     println!("##############################");
-    let tokenizer = crate::training::execute(training_set);
+    let start = Instant::now();
+    let tokenizer = crate::training::execute(training_set, false);
+    let duration = start.elapsed();
+    println!("Training took {:.2} seconds", duration.as_secs_f64());
     println!("##############################");
     println!("END TRAINING");
 
-    
     // encode example
-    let example_file_path = "data/example.txt";
+    let example_file_path = "data/encode_text.txt";
     let example = fs::read_to_string(example_file_path)?;
     let text_example: &str = &example;
     println!("");
     println!("START ENCODING");
     println!("##############################");
-    let text_encoded = encode(&tokenizer, text_example.as_bytes().to_vec());
-    println!("output tokens: {:?}", text_encoded);
-    let text_decoded = decode(&tokenizer.vocab_hash, text_encoded);
+    let text_encoded = encode(&tokenizer, text_example.as_bytes().to_vec(), false);
+    // write output tokens to file
+    let mut file = File::create("data/output/encode_output.txt")?;
+    for token in &text_encoded {
+        writeln!(file, "{}", token)?;
+    }
     println!("##############################");
     println!("END ENCODING");
 
+    // decode what was encoded for checking
+    let text_decoded = decode(&tokenizer.vocab_hash, text_encoded);
+    
     // checks
     println!("");
     assert_eq!(text_example.as_bytes().to_vec(), text_decoded.as_bytes().to_vec());
@@ -78,11 +85,10 @@ fn main() -> Result<(), std::io::Error> {
     Ok(())
 }
 
-
+// TODO: encode also needs to incorporate the same chunking as during training
 // TODO: improve iteration process? currently iterates through mapping & each time
 //       text vector is iterated through twice to (1) get pairs and (2) replace occurrences
-fn encode(map: &crate::training::Vocabulary, text_vector: Vec<u8>) -> Vec<u32> {
-    let verbose = true;        // change to true to print merges during encoding
+fn encode(map: &crate::training::Vocabulary, text_vector: Vec<u8>, verbose: bool) -> Vec<u32> {
     let text_clone = text_vector.clone();
     // translate into Vec<u32> to hold the extended bytes
     let mut text: Vec<u32> = text_vector.into_iter().map(|val| val as u32).collect();
@@ -105,7 +111,7 @@ fn encode(map: &crate::training::Vocabulary, text_vector: Vec<u8>) -> Vec<u32> {
                         let string_byte1 = map.stringify_word(&byte1);
                         let string_byte2 = map.stringify_word(&byte2);
                         let string_view = format!("{}{}", &string_byte1, &string_byte2);
-                        println!("replacing `{:?}{:?}` with {}", 
+                        println!("replacing {:?}, {:?} with {:?}", 
                             string_byte1,
                             string_byte2,
                             string_view);
@@ -124,7 +130,7 @@ fn encode(map: &crate::training::Vocabulary, text_vector: Vec<u8>) -> Vec<u32> {
     text
 }
 
-
+// TODO: decode also need to be chunked? check python minbpe Regex class to see how it was done there
 // TODO: take care of case when LLM provides invalid byte sequences (replace with invalid char)
 fn decode(decode_map: &HashMap<u32, (u32, u32)>, tokens_vector: Vec<u32>) -> String {
     let mut tokens = tokens_vector;

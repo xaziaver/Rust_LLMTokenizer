@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::io::Write;
 use std::collections::HashMap;
 use regex::Regex;
 
@@ -28,9 +30,9 @@ impl Vocabulary {
 
 // instead of using the raw UTF-8 bytes we want to support a larger vocabulary size
 // that we can tune as a hyperparameter while sticking with the same encoding
-pub fn execute(test_string: &str) -> Vocabulary {
+pub fn execute(test_string: &str, verbose: bool) -> Vocabulary {
     let target_vocab_size = 512;
-    let new_vocabulary = train_tokenizer(test_string, target_vocab_size);
+    let new_vocabulary = train_tokenizer(test_string, target_vocab_size, verbose);
     new_vocabulary
 }
 
@@ -42,8 +44,8 @@ pub fn execute(test_string: &str) -> Vocabulary {
 
 /// uses the BPE algorithm to merge the most common pairs of bytes across chunks of the input text
 /// the number of merges depends on the desired 'target' words in the returned Vocabulary object
-fn train_tokenizer(text: &str, target: u32) -> Vocabulary {
-    let verbose = false;        // change to true to print merges during training
+fn train_tokenizer(text: &str, target: u32, verbose: bool) -> Vocabulary {
+    let mut file = File::create("data/output/training_output.txt").unwrap();
     let mut vocab = Vocabulary {
         vocab_hash: HashMap::<u32, (u32, u32)>::new(),
         vocab_vec: Vec::<((u32, u32), u32)>::new(),
@@ -89,10 +91,16 @@ fn train_tokenizer(text: &str, target: u32) -> Vocabulary {
             let string_view = format!("{}{}", vocab.stringify_word(&byte1), vocab.stringify_word(&byte2));
             if verbose == true {
                 println!("merge {}/{}: ({}, {}) -> {} (b'{}') had {} occurrences",
-                    total_merges-merges+1, total_merges, byte1, byte2,new_word, string_view, count);
+                    total_merges-merges+1, total_merges, byte1, byte2, new_word, string_view, count);
              }
+            writeln!(file, "[{}][{}] -> [{}] {}", 
+                vocab.stringify_word(&byte1), 
+                vocab.stringify_word(&byte2), 
+                &string_view, 
+                &new_word)
+            .unwrap();
             vocab.vocab_view.insert(new_word, string_view);
-            
+
             // replace all occurrences of pair in each chunk with new_word
             for chunk in &mut split_bytes_ext {
                 let mut i = 0;

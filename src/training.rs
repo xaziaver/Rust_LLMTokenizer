@@ -1,3 +1,9 @@
+// TODO:
+
+// TODO: look at available inference source code (https://github.com/openai/tiktoken) to try to reverse
+// engineer training methods... tiktoken/tiktoken_ext/openai_public.py shows some details
+// tiktokenizer.vercel.app to see results with different versions of tokenizers
+
 use std::fs::File;
 use std::io::Write;
 use std::collections::HashMap;
@@ -35,11 +41,6 @@ pub fn execute(test_string: &str, verbose: bool) -> Vocabulary {
     let new_vocabulary = train_tokenizer(test_string, target_vocab_size, verbose);
     new_vocabulary
 }
-
-
-// TODO: look at available inference source code (https://github.com/openai/tiktoken) to try to reverse
-// engineer training methods... tiktoken/tiktoken_ext/openai_public.py shows some details
-// tiktokenizer.vercel.app to see results with different versions of tokenizers
 
 
 /// uses the BPE algorithm to merge the most common pairs of bytes across chunks of the input text

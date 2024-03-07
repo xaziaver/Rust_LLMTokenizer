@@ -27,8 +27,8 @@
 [wi][ft] -> [wift] 282
 [e][t] -> [et] 283
 [ S][wift] -> [ Swift] 284
-[c][h] -> [ch] 285
-[b][er] -> [ber] 286
+[b][er] -> [ber] 285
+[c][h] -> [ch] 286
 [a][t] -> [at] 287
 [o][m] -> [om] 288
 [e][s] -> [es] 289
@@ -46,8 +46,8 @@
 [l][l] -> [ll] 301
 [ri][e] -> [rie] 302
 [ R][et] -> [ Ret] 303
-[ Ret][rie] -> [ Retrie] 304
-[ Retrie][ved] -> [ Retrieved] 305
+[rie][ved] -> [rieved] 304
+[ Ret][rieved] -> [ Retrieved] 305
 [ ][s] -> [ s] 306
 [i][c] -> [ic] 307
 [an][d] -> [and] 308
@@ -90,8 +90,8 @@
 [ ][F] -> [ F] 345
 [ ][W] -> [ W] 346
 [l][e] -> [le] 347
-[ t][o] -> [ to] 348
-[ ][c] -> [ c] 349
+[ ][c] -> [ c] 348
+[ t][o] -> [ to] 349
 [.][[] -> [.[] 350
 [o][v] -> [ov] 351
 [l][y] -> [ly] 352
@@ -108,52 +108,52 @@
 [ ][I] -> [ I] 363
 [ T][aylor] -> [ Taylor] 364
 [i][st] -> [ist] 365
-[ ][d] -> [ d] 366
-[a][m] -> [am] 367
-[ ][O] -> [ O] 368
+[ ][O] -> [ O] 366
+[ ][d] -> [ d] 367
+[a][m] -> [am] 368
 [o][p] -> [op] 369
 [ J][u] -> [ Ju] 370
 [ h][er] -> [ her] 371
 [ ][L] -> [ L] 372
 [u][st] -> [ust] 373
 [a][d] -> [ad] 374
-[ T][he] -> [ The] 375
-[u][ary] -> [uary] 376
+[u][ary] -> [uary] 375
+[ T][he] -> [ The] 376
 [en][t] -> [ent] 377
-[us][ic] -> [usic] 378
-[ov][ember] -> [ovember] 379
+[ov][ember] -> [ovember] 378
+[us][ic] -> [usic] 379
 [e][w] -> [ew] 380
 [er][s] -> [ers] 381
-[ar][t] -> [art] 382
-[i][d] -> [id] 383
+[i][d] -> [id] 382
+[ar][t] -> [art] 383
 [ ][E] -> [ E] 384
 [e][l] -> [el] 385
-[on][g] -> [ong] 386
-[i][m] -> [im] 387
-[o][ber] -> [ober] 388
+[i][m] -> [im] 386
+[o][ber] -> [ober] 387
+[on][g] -> [ong] 388
 [e][p] -> [ep] 389
 [ f][or] -> [ for] 390
 [ct][ober] -> [ctober] 391
 [b][o] -> [bo] 392
 [ B][ill] -> [ Bill] 393
-[ec][ember] -> [ecember] 394
-[ S][t] -> [ St] 395
+[ S][t] -> [ St] 394
+[ec][ember] -> [ecember] 395
 [bo][ard] -> [board] 396
 [o][w] -> [ow] 397
 [u][g] -> [ug] 398
 [o][t] -> [ot] 399
 [ Bill][board] -> [ Billboard] 400
 [1][0] -> [10] 401
-[n][t] -> [nt] 402
-[n][e] -> [ne] 403
+[n][e] -> [ne] 402
+[n][t] -> [nt] 403
 [e][ar] -> [ear] 404
 [ou][r] -> [our] 405
 [ri][t] -> [rit] 406
 [i][r] -> [ir] 407
 [b][um] -> [bum] 408
 [u][r] -> [ur] 409
-[at][ion] -> [ation] 410
-[20][0] -> [200] 411
+[20][0] -> [200] 410
+[at][ion] -> [ation] 411
 [o][l] -> [ol] 412
 [es][s] -> [ess] 413
 [ ][r] -> [ r] 414
@@ -163,8 +163,8 @@
 [ ]['] -> [ '] 418
 [e][b] -> [eb] 419
 [ ][al] -> [ al] 420
-[i][v] -> [iv] 421
-[ ][Y] -> [ Y] 422
+[ ][Y] -> [ Y] 421
+[i][v] -> [iv] 422
 [u][t] -> [ut] 423
 [ ][wi] -> [ wi] 424
 [r][y] -> [ry] 425
@@ -176,31 +176,31 @@
 [ ][at] -> [ at] 431
 [ ][re] -> [ re] 432
 [ Ju][ly] -> [ July] 433
-[ t][h] -> [ th] 434
-[ ][n] -> [ n] 435
+[ ][n] -> [ n] 434
+[ t][h] -> [ th] 435
 [ A][ugust] -> [ August] 436
 [or][d] -> [ord] 437
-[w][ard] -> [ward] 438
+[ ][K] -> [ K] 438
 [1][9] -> [19] 439
-[ ][K] -> [ K] 440
+[w][ard] -> [ward] 440
 [ O][ctober] -> [ October] 441
 [ ][l] -> [ l] 442
 [o][ll] -> [oll] 443
 [p][ri] -> [pri] 444
 [u][l] -> [ul] 445
 [ep][t] -> [ept] 446
-[ M][usic] -> [ Music] 447
-[ ][U] -> [ U] 448
-[o][s] -> [os] 449
+[ ][U] -> [ U] 447
+[o][s] -> [os] 448
+[ M][usic] -> [ Music] 449
 [eb][r] -> [ebr] 450
-[ a][s] -> [ as] 451
+[,][[] -> [,[] 451
 [n][d] -> [nd] 452
-[,][[] -> [,[] 453
+[ a][s] -> [ as] 453
 [ebr][uary] -> [ebruary] 454
 [ N][ew] -> [ New] 455
 [ ][st] -> [ st] 456
-[o][d] -> [od] 457
-[a][k] -> [ak] 458
+[a][k] -> [ak] 457
+[o][d] -> [od] 458
 [pri][l] -> [pril] 459
 [ou][nt] -> [ount] 460
 [ C][h] -> [ Ch] 461
@@ -225,32 +225,32 @@
 [�][�] -> [�] 480
 [ S][he] -> [ She] 481
 [ M][ay] -> [ May] 482
-[ A][l] -> [ Al] 483
-[2][3] -> [23] 484
+[2][3] -> [23] 483
+[ A][l] -> [ Al] 484
 [ Ju][ne] -> [ June] 485
 [ m][usic] -> [ music] 486
 [1][8] -> [18] 487
 [ T][im] -> [ Tim] 488
-[iv][e] -> [ive] 489
-[ F][ebruary] -> [ February] 490
-[e][e] -> [ee] 491
-[i][an] -> [ian] 492
-[2][4] -> [24] 493
+[ F][ebruary] -> [ February] 489
+[iv][e] -> [ive] 490
+[2][4] -> [24] 491
+[e][e] -> [ee] 492
+[i][an] -> [ian] 493
 [mer][ic] -> [meric] 494
 [1][2] -> [12] 495
 [ S][eptember] -> [ September] 496
-[ s][ing] -> [ sing] 497
-[ ][v] -> [ v] 498
-[ w][as] -> [ was] 499
-[ A][pril] -> [ April] 500
+[ ][v] -> [ v] 497
+[ A][pril] -> [ April] 498
+[ s][ing] -> [ sing] 499
+[ w][as] -> [ was] 500
 [1][7] -> [17] 501
 [2][2] -> [22] 502
-[o][g] -> [og] 503
-[w][rit] -> [writ] 504
-[N][ovember] -> [November] 505
-[ s][ong] -> [ song] 506
-[1][4] -> [14] 507
-[ig][h] -> [igh] 508
-[l][d] -> [ld] 509
-[]][\u000a] -> []\u000a] 510
-[ s][he] -> [ she] 511
+[N][ovember] -> [November] 503
+[o][g] -> [og] 504
+[w][rit] -> [writ] 505
+[1][4] -> [14] 506
+[]][\u000a] -> []\u000a] 507
+[l][d] -> [ld] 508
+[ig][h] -> [igh] 509
+[ s][he] -> [ she] 510
+[ s][ong] -> [ song] 511

@@ -21,7 +21,6 @@ def get_stats(ids, counts=None):
         counts[pair] = counts.get(pair, 0) + 1
     return counts
 
-
 def merge(ids, pair, idx):
     """
     In the list of integers (ids), replace all consecutive occurrences

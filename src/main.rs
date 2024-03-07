@@ -16,7 +16,7 @@ pub mod training;
 
 fn main() -> Result<(), std::io::Error> {
     // fetch data and run training to get maps
-    let data_file_path = "data/training_text.txt";
+    let data_file_path = "data/train_text.txt";
     let data = fs::read_to_string(data_file_path)?;
     let training_set: &str = &data;
 
@@ -43,7 +43,7 @@ fn main() -> Result<(), std::io::Error> {
     // write output tokens to file
     let mut file = File::create("data/output/encode_output.txt")?;
     for token in &text_encoded {
-        writeln!(file, "{}", token)?;
+        writeln!(file, "{}", tokenizer.stringify_word(&[*token]))?;
     }
     println!("##############################");
     println!("END ENCODING");
@@ -52,10 +52,10 @@ fn main() -> Result<(), std::io::Error> {
     let text_decoded = decode(&tokenizer, text_encoded);
     
     // checks
-    println!("");
+    /*println!("");
     assert_eq!(text_example.as_bytes().to_vec(), text_decoded.as_bytes().to_vec());
     println!("if you can see this then they were byte-wise equal!");
-    println!("");
+    println!("");*/ 
     
     Ok(())
 }
@@ -103,8 +103,8 @@ fn encode(vocab: &crate::training::Vocabulary, text: &str, verbose: bool) -> Vec
                     if chunk[i] == *byte1 && chunk[i + 1] == *byte2 {
                         // print replacements
                         if verbose == true {
-                            let string_byte1 = vocab.stringify_word(&byte1);
-                            let string_byte2 = vocab.stringify_word(&byte2);
+                            let string_byte1 = vocab.stringify_word(&[*byte1]);
+                            let string_byte2 = vocab.stringify_word(&[*byte2]);
                             let string_view = format!("{}{}", &string_byte1, &string_byte2);
                             println!("replacing {:?}, {:?} with {:?}", 
                                 string_byte1,

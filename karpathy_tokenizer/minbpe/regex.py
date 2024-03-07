@@ -40,6 +40,16 @@ class RegexTokenizer(Tokenizer):
         # split the text up into text chunks
         text_chunks = re.findall(self.compiled_pattern, text)
 
+
+        ###################################################
+        # to compare how the input is being chunked
+        chunk_output_path = "data/output/chunk_target.txt"
+        with open(chunk_output_path, "w") as f:
+            for chunk in text_chunks:
+                f.write("%s\n" % chunk)
+        ###################################################
+
+
         # input text preprocessing
         ids = [list(ch.encode("utf-8")) for ch in text_chunks]
 
@@ -52,8 +62,14 @@ class RegexTokenizer(Tokenizer):
             for chunk_ids in ids:
                 # passing in stats will update it in place, adding up counts
                 get_stats(chunk_ids, stats)
-            # find the pair with the highest count
-            pair = max(stats, key=stats.get)
+
+
+            ########################################################################
+            # find the pair with the highest count, breaking ties lexicographically
+            pair = max(stats.items(), key=lambda x: (x[1], -x[0][0], -x[0][1]))[0]
+            ########################################################################
+
+            
             # mint a new token: assign it the next available id
             idx = 256 + i
             # replace all occurrences of pair in ids with idx
@@ -85,9 +101,10 @@ class RegexTokenizer(Tokenizer):
                 part_bytes.append(self.inverse_special_tokens[idx].encode("utf-8"))
             else:
                 raise ValueError(f"invalid token id: {idx}")
-        text_bytes = b"".join(part_bytes)
-        text = text_bytes.decode("utf-8", errors="replace")
-        return text
+
+        return part_bytes
+        #text_bytes = b"".join(part_bytes)
+        #text = text_bytes.decode("utf-8", errors="replace")   
 
     def _encode_chunk(self, text_bytes):
         # return the token ids

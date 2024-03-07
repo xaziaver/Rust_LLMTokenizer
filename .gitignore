@@ -2,9 +2,9 @@
 /target
 
 # python files
-/python_tokenizer/minbpe/__pycache__/
-/python_tokenizer/.DS_Store
-/python_tokenizer/models/**/*
-/python_tokenizer/*.pytest_cache
-/python_tokenizer/*.model
-/python_tokenizer/*.vocab
+/karpathy_tokenizer/minbpe/__pycache__/
+/karpathy_tokenizer/.DS_Store
+/karpathy_tokenizer/models/**/*
+/karpathy_tokenizer/*.pytest_cache/
+/karpathy_tokenizer/*.model
+/karpathy_tokenizer/*.vocab
